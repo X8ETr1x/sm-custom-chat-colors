@@ -1,82 +1,78 @@
-# sm-custom-chat-colors
+# Custom Chat Colors
 
 A fork of [Dr. McKay's plugin](https://forums.alliedmods.net/showthread.php?t=186695).
 
-Description:
-Give particular Steam IDs and admin flags custom chat colors and name tags. Supports any color you can imagine, or team color, green, and olive. This is a rewrite of Simple Chat Colors (Redux). Requires Simple Chat Processor (Redux). Complete documentation is in the config file.
+Give particular Steam IDs and admin flags custom chat colors and name tags. Supports any color you can imagine, or team color, green, and olive. This is a rewrite of Simple Chat Colors (Redux). 
 
-Only works in Source 2013 games, which include:
+## Compatibility
 
-    Team Fortress 2
-    Counter-Strike: Source
-    Half-Life 2: Deathmatch
-    Day of Defeat: Source
+- Team Fortress 2: all colors.
+- Counter-Strike: Source: all colors.
+- Half-Life 2: Deathmatch: all colors.
+- Day of Defeat: Source: all colors.
 
+## Installation
 
-This also works on CS:GO, but only "T", "G", and "O" codes can be used.
+- Add the compiled plugin `custom-chatcolors.smx` to `tf/addons/sourcemod/plugins/`.
+- Add the addon configuration file `custom-chatcolors.cfg` to `/tf/addons/sourcemod/configs/`.
+- Reload all plugins or restart the server.
 
-Update: I'm getting reports that colors don't work on CS:GO when alive. This is a shame, but this plugin doesn't officially support CS:GO. Don't expect it to be fixed.
+### Dependencies
 
+- [Chat Processor](https://github.com/X8ETr1x/sm-chat-processor)
 
-This plugin will never support any CS:GO colors beyond those mentioned above, so stop asking.
+## Configuration
 
-Commands:
-sm_reloadccc - reloads the config file
+The primary configuration file is `tf/addons/sourcemod/configs/custom-chatcolors.cfg`.
 
-Cvars:
-custom_chat_colors_version - plugin version
-custom_chat_colors_auto_update (default 1) - enables automatic updating (has no effect if Updater is not installed)
+- If you don't enter a steamid then the group name does not matter, it's just for your reference.
+- For colors, either a hex notation of a color (#RRGGBB or #RRGGBBAA) or one of the supported shortcuts (O - Olive, G - Green, T - Team) is required.
 
-Requirements:
-Requires the Simple Chat Processor (Redux) plugin.
+### Order of Operations
 
-Developers:
-This plugin provides several forwards and natives. See the include file for documentation.
+The order in which you place items in the config file matters.  Here is what determines what color they get:
 
-Installation:
-Install Simple Chat Processor (Redux), extract chatcolors.zip, upload its contents to your /addons/sourcemod directory, and reboot your server or type "sm plugins load custom-chatcolors" into your console or rcon.
+1. **SteamID:** If there is a steamid present, it will always override everything.  If you put a steamid in twice then the first entry (top to bottom) will be used. (I think, just don't do it!).
+2. **Groups:** The plugin will search (top to bottom) for a postitive match for the flag string.  The player' flags will be compared with the group flag character (NOTE: only one flag per group! "a" is okay, "ab" is NOT), and if the player has the flag, it will stop there. For example. Admins with the "ad" flags and donators with the "a" flag.  If you place the "a" flag group above the "d" group then the admin will get the "a" colors. Order matters.
 
-Auto Update:
-Install Updater. The plugin will be auto-updated according to your Updater settings. It'll work without Updater.
+```
+//		"admin_colors"								<--	Leave this alone
+//		{											<--	Add all groups/steamids after first bracket (Leave this alone)																			
+//			"STEAM_0:1:1234567"						<--	Here is a steamid example with a tag (don't duplicate steamids)
+//			{
+//				"namecolor"		"#RRGGBB"			<--	This is the color for the name (#RRGGBB in hex notation or #RRGGBBAA with alpha)
+//				"textcolor"		"#RRGGBBAA"			<--	This is the color of the text
+//			}
+//			"groupname"								<--	This can either be a steamid for a specific player, or a group name
+//			{										<--	Open the group
+//				"flag"				"z"				<--	This is the flag(s) assoicated with the group.  This field doesn't matter if the group name is a steamid
+//				"tag"				"[admin]"		<--	This is the text for the tag
+//				"tagcolor"		"O"					<--	This is the color for the tag
+//				"namecolor"		"G"					<--	This is the color for the name
+//				"textcolor"		"T"					<--	This is the color of the text
+//			}										<--	Close the group
+//		}											<--	Add all groups/steamids before last bracket (Leave this alone)
+//
+"admin_colors"
+{
+	"STEAM_0:1:16"
+	{
+		"tag"				"[BAILOPAN]"
+		"tagcolor"			"O"
+	}
+	"VIP"
+	{
+		"flag"				"a"
+		"tag"				"[VIP]"
+		"tagcolor"			"#9EC34FAA"
+		"namecolor"			"#00CCFF"
+		"textcolor"			"#000000AA"
+	}
+}
+```
 
-Changelog:
+## Commands
 
-    v3.1.0 (8/30/14)
-        Added support for Steam3 IDs
-    v3.0.0 (7/8/13)
-        Removed deprecated natives
-        Added CCC_OnColor and CCC_OnChatMessage forwards
-        Deprecated CCC_OnTagApplied, CCC_OnNameColor, and CCC_OnChatColor forwards
-        Improved Updater integration
-    v2.4.0 (2/11/13)
-        Added CCC_OnConfigReloaded forward
-    v2.3.0 (1/27/13)
-        Added support for CS:GO
-    v2.2.0 (1/16/13)
-        Added CCC_OnUserConfigPreLoaded forward so other plugins can block the config file from being loaded
-    v2.1.0 (12/8/12)
-        Added library registration so that other plugins can verify that Custom Chat Colors is running
-    v2.0.0 (11/25/12)
-        Improved and revised natives
-    v1.8.0 (9/27/12)
-        Changed update URL to SVN repository
-        Plugin now properly fails to load when Simple Chat Processor is not installed
-    v1.7.0 (9/16/12)
-        Fixed a bug that caused people to improperly receive colors and tags
-    v1.6.0 (9/16/12)
-        Renamed forwards to add CCC_ prefix
-        Added CCC_OnUserConfigLoaded forward
-        Added CCC_SetNameColor, CCC_SetChatColor, CCC_SetTagColor, and CCC_SetTag natives
-    v1.5.0 (8/25/12)
-        Plugin now warns on load if simple-chatprocessor.smx is not loaded
-    v1.4.0 (7/12/12)
-        Added ability to disable automatic updating
-    v1.3.0 (7/3/12)
-        Fixed a problem with the OnNameColor forward
-    v1.2.0 (6/14/12)
-        Made the natives actually work
-    v1.1.0 (6/14/12)
-        Added OnTagApplied forward
-        Added CCC_GetNameColor, CCC_GetChatColor, CCC_GetTagColor, and CCC_GetTag natives
-    v1.0.0 (6/2/12)
-        Initial release
+* `sm_reloadccc`:
+  * **Description:** Reloads the configuration.
+  * **Required Admin Flags**: config.
