@@ -2,9 +2,9 @@
 #pragma newdecls required
 
 #include <sourcemod>
-#include <chat-processor>
+#include <sm-chat-processor>
 
-#define PLUGIN_VERSION		"3.2.1"
+#define PLUGIN_VERSION		"3.2.2"
 
 public Plugin myinfo = {
 	name        = "[Source 2013] Custom Chat Colors",
