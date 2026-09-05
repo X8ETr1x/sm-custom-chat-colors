@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.2.2] 2026-09-05
+
+### Changed
+
+- Updated dependencies for `sm-chat-processor`.
+
 ## [3.2.1] 2026-09-05
 
 ### Changed
